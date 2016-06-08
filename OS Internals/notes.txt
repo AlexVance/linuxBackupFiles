@@ -1,0 +1,140 @@
+Major events of process management:
+1) Schedule processes and threads on CPU
+2) Create and delete user and system processes
+3) Suspend and resume processes
+4) provide mechanisms for synchronization and communication
+
+Major events of memory management:
+1) Track parts of memory being used, by who
+2) Decide what to move in/out of memory
+3) allocate and deallocate memory as needed
+
+Major events of storage management:
+1) Create and delete files
+2) Create and delete directories to organize files
+3) support primitives for file and directory manipulation
+
+ Producer - bounded buffer
+
+ item next_produced;
+ while(true) {
+ 	//product an item in next produced
+ 	while(((in + 1) % BUFFER_SIZE) == out)
+ 	/*do nothing*/
+ 	buffer[in] = next_produced;
+ 	int = (in + 1) % BUFFER_SIZE;
+ }
+
+ consumer - bounded buffer
+
+ item next_consumed;
+ while(true){
+ 	while(in == out){
+ 		/*do nothing*/
+ 		next_consumed = buffer[out];
+ 		out = (out + 1) % BUFFER_SIZE;
+
+ 		/*consume the item in next command*/
+ 	}
+ }
+
+ 5/26****************************************************
+
+ Sockets *****
+ "an endpoint for communication"
+ -Concatination of IP address and port
+ 
+User Thread: managment done by user-level threads library
+-POSIX pThreads
+-Windows threads
+-java threads
+
+Kernel threads: supported by the Kernel
+- Windows
+- Linux
+- Mac OS X
+
+5/31*****************************************************
+Chapter 5
+
+Peterson's solution:
+uses turn and flag
+
+Locks:
+lock is released upon performing critical section
+test/set: is it a lock, also set it
+compare/swap: do I have the lock, also swap
+
+test_and_set Instruction
+boolean test_and_set (boolean *target)
+ {
+	 boolean rv = *target;
+	 *target = TRUE;
+	 return rv:
+ }
+
+ semaphores:
+ synchonization tool that provides more sophisticated ways than Mutex locks for processes to synchronize their activities.
+ only accessed via:
+ wait()
+ signal()
+
+ wait(s) {
+ 	while( s<= 0)
+ 		; //busy wait
+ 		s--;
+ }
+
+6/2************************************************
+monitor solution example is in book, dining philosophers problem
+
+Windows Synchronization:
+spinlock: polling solution, while listener
+dispatcher objects
+
+Linux Synchronization:
+-semaphores
+-atomic integers
+-spinlocks
+-reader/writer versions of both
+
+When you disable the ability of the kernel to make an interupt, it can't interupt the process. On multi-cpu systems however, you can tell it to not interupt processes 
+
+6/6************************************************
+Homogeneous processors
+Asymmetric multiprocessing: only one processor accesses the system data structures, alleviateing teh need for data sharing
+
+Symmetric multiprocessing: each processor is self-scheduling, all processes in common ready queue, or each has its own private queue of ready processes
+	- This is currently the most common
+Processor affinity - process has affinity for processor on which it is currently running
+	- soft affinity
+	- hard affinity
+	- variations including processor sets
+	- When a process gets created, it has affinity for a specific core or processor, and it will run there
+
+If SMP, need to keep all CPUs loaded for efficiency
+- load balancing attempts to keep workload evenlydistributed
+- push migration - periodic task checks load on each processor, and if found pushes task from overloaded CPU to other CPUs
+- pull migration - idle processors pulls waiting task from busy processor
+
+-------
+Chapter 7: Deadlocks
+
+System Model (these are subscripts)
+- consists of resources (R1, R2 ..., Rm) 
+- Each resource type Ri has Wi instances
+- Each process utilizes a resource as follows:
+	- request
+	-use
+	-request
+
+Deadlock Characterization
+The 4 conditions that need to hold simultaneously:
+1) mutual exclusion: only one process at a time can use a resource
+
+2) hold and wait: a process holding at least one resource is waiting to acquire additional resources held by other processes
+
+3) No preemtion: a resource can be released only voluntarily by the process holding it, after that process has completed its task.
+
+4) Circular wait: there exists a set {P0,P1...Pn} of waiting processes such that P0 is waiting for a resource that is held by P1, P1 is waiting for one held by P2 and so on.
+
