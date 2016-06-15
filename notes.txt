@@ -1,0 +1,326 @@
+Major events of process management:
+1) Schedule processes and threads on CPU
+2) Create and delete user and system processes
+3) Suspend and resume processes
+4) provide mechanisms for synchronization and communication
+
+Major events of memory management:
+1) Track parts of memory being used, by who
+2) Decide what to move in/out of memory
+3) allocate and deallocate memory as needed
+
+Major events of storage management:
+1) Create and delete files
+2) Create and delete directories to organize files
+3) support primitives for file and directory manipulation
+
+ Producer - bounded buffer
+
+ item next_produced;
+ while(true) {
+ 	//product an item in next produced
+ 	while(((in + 1) % BUFFER_SIZE) == out)
+ 	/*do nothing*/
+ 	buffer[in] = next_produced;
+ 	int = (in + 1) % BUFFER_SIZE;
+ }
+
+ consumer - bounded buffer
+
+ item next_consumed;
+ while(true){
+ 	while(in == out){
+ 		/*do nothing*/
+ 		next_consumed = buffer[out];
+ 		out = (out + 1) % BUFFER_SIZE;
+
+ 		/*consume the item in next command*/
+ 	}
+ }
+
+ 5/26****************************************************
+
+ Sockets *****
+ "an endpoint for communication"
+ -Concatination of IP address and port
+ 
+User Thread: managment done by user-level threads library
+-POSIX pThreads
+-Windows threads
+-java threads
+
+Kernel threads: supported by the Kernel
+- Windows
+- Linux
+- Mac OS X
+
+5/31*****************************************************
+Chapter 5
+
+Peterson's solution:
+uses turn and flag
+
+Locks:
+lock is released upon performing critical section
+test/set: is it a lock, also set it
+compare/swap: do I have the lock, also swap
+
+test_and_set Instruction
+boolean test_and_set (boolean *target)
+ {
+	 boolean rv = *target;
+	 *target = TRUE;
+	 return rv:
+ }
+
+ semaphores:
+ synchonization tool that provides more sophisticated ways than Mutex locks for processes to synchronize their activities.
+ only accessed via:
+ wait()
+ signal()
+
+ wait(s) {
+ 	while( s<= 0)
+ 		; //busy wait
+ 		s--;
+ }
+
+6/2************************************************
+monitor solution example is in book, dining philosophers problem
+
+Windows Synchronization:
+spinlock: polling solution, while listener
+dispatcher objects
+
+Linux Synchronization:
+-semaphores
+-atomic integers
+-spinlocks
+-reader/writer versions of both
+
+When you disable the ability of the kernel to make an interupt, it can't interupt the process. On multi-cpu systems however, you can tell it to not interupt processes 
+
+6/6************************************************
+Homogeneous processors
+Asymmetric multiprocessing: only one processor accesses the system data structures, alleviateing teh need for data sharing
+
+Symmetric multiprocessing: each processor is self-scheduling, all processes in common ready queue, or each has its own private queue of ready processes
+	- This is currently the most common
+Processor affinity - process has affinity for processor on which it is currently running
+	- soft affinity
+	- hard affinity
+	- variations including processor sets
+	- When a process gets created, it has affinity for a specific core or processor, and it will run there
+
+If SMP, need to keep all CPUs loaded for efficiency
+- load balancing attempts to keep workload evenlydistributed
+- push migration - periodic task checks load on each processor, and if found pushes task from overloaded CPU to other CPUs
+- pull migration - idle processors pulls waiting task from busy processor
+
+-------
+Chapter 7: Deadlocks
+
+System Model (these are subscripts)
+- consists of resources (R1, R2 ..., Rm) 
+- Each resource type Ri has Wi instances
+- Each process utilizes a resource as follows:
+	- request
+	-use
+	-request
+
+Deadlock Characterization
+The 4 conditions that need to hold simultaneously:
+1) mutual exclusion: only one process at a time can use a resource
+
+2) hold and wait: a process holding at least one resource is waiting to acquire additional resources held by other processes
+
+3) No preemtion: a resource can be released only voluntarily by the process holding it, after that process has completed its task.
+
+4) Circular wait: there exists a set {P0,P1...Pn} of waiting processes such that P0 is waiting for a resource that is held by P1, P1 is waiting for one held by P2 and so on.
+
+6/9******************************
+- be able to recognize graphs and understand, cycles with deadlocks and those.
+- be able to understand general algorithm for detecting unsafe states "avoidance algorithms"
+ - understand 4 things in bankers algorithm
+ - be familiar with safety algorithm (just get what it does) 
+ - recovery from deadlock termination
+
+ ***** exam review******
+Chapter 1
+-cpu can only execute instructions
+-OS handles reads and writes to disk
+-understand program compilation process
+-understand traps and exceptions
+-understand system calls (entire process)
+-multiprocessing, asymmetric vs symmetric
+
+Chapter 2
+-understand api's, difference between them and system calls
+-separating policy and mechanism
+-layered interfaces, idea of the rings (layered approach), 0=hardware, 1, ... n is ui
+-know microkernel vs macrokernel (monolithic kernel)
+
+Chapter 3
+-passive and active identities
+-process isn't program, holds info from program
+-states of a process (what they are, why they are important)
+-process control block (how context switches work with cpu and pcb)
+-difference between process, thread, what threads do and provide
+-know scheduler, different kinds of schedulers
+-zombie/orphan processes
+-interprocess communication (IPC) happens within ram, over networks,
+-producer/consumer problem and shared memory
+-synchronization (blocking/non-blocking) and all the different types (slide 3.44?)
+-sockets, what it is, ip address and ports, how they communicate, work together
+-remote procedure calls (including big/little endian)
+
+Chapter 4
+-multiple threads for a process, how they can be listened for on systems
+-data and task parallelism (slide 4.08)
+-different threading models, how user threads get work from kernel threads
+-pthreads
+-fork() and exec()
+-TLS (Thread Local Storage) and process control block. This is per-thread memory storage
+
+Chapter 5
+-race conditions, what and why it happens
+-critical sections (entry, critical section, remainder)
+-3 criteria for critial-section problem
+-mutex and semaphores
+-deadlock and starvation
+-dining philosopher, reading/writing, bounded buffer problem. ***HE WILL MAKE US WORK THROUGH ONE OF THESE
+
+Chapter 6
+cpu burst, io burst and why important for scheduling considerations
+-FCFS, SJF, shortest remaining time first, priority scheduling, round robin scheduling (time quanta)
+-process vs system contention scopes
+-role of deadline in realtime system scheduling
+-in general how priorities work
+
+Chapter 7
+-safe,unsafe states
+-resource allocation graphs, wait for graphs
+-know bankers algorithm 
+-deadlock avoidance and detection differences
+-
+
+6/14********************
+Address Binding
+-compiled code addresses bind to relocatable addresses
+
+Logical VS Physical Address space
+-logical address: generated by CPU, AKA virtual address
+-physical address: address seen by the memory unit
+-logical address space is the set of all logical addresses generated by a program
+-physical address space is the set of all physical addresses generated by a program
+
+virtual/logical address abstracts the physical address to hide paging
+
+Memory-Management Unit (MMU)
+-hardware that at run time maps virtual to physical address
+-see book, slide 11/71 ch. 8 Main Memory
+
+Dynamic relocation using relocation register
+- routine not loaded until called
+- better memory-space utilization
+- all routines kept on disk in relocatable load format
+- no specital support from OS required
+
+**Context Switch Time and Swapping**
+-Pending I/O: can't swap out as I/O would occur to wrong process
+-double buffering, always transfer I/O to kernel space, then I/O device (adds overhead)
+
+**Mobile system swapping**
+-not typically supported
+-flash memory based
+-little space, limited write cycles
+
+**Contiguous Allocation**
+-Main memory must support OS and user processes
+-limited resource, must allocate efficiently
+-Contiguous allocation is one early method
+-Main memory usually into 2 partitions:
+	- Resident OS, usually held in low memory w/ interupt vector
+	- User processes then held in high memory
+	- Each process contained in single contiguous section of memory
+
+- Relocation registers used to protect user processes from each other
+	-base register contains value of smallest physical address
+	-limit register contains range of logical addresses
+
+**Multiple-Partition Allocation**
+- variable partition sizes for efficiency
+- hole: block of available memory; holes of various size are scattered throughout memory
+	First-fit: Allocate the first hole that is big enough
+	Best-fit: Allocate the smallest hole that is big enough; must search entire list, unless ordered by size.
+		-produces smallest leftover hole
+	Worst-fit: Allocate the largest hole; must search entire list
+		-produces the largest leftover hole
+
+**Fragmentation**
+- External Fragmentation: total memory space exists to satisfy a request, but it is not contiguous
+- Internal Fragmentation: allocated memory may be slightly larger than requested memory
+
+reduce external fragmentation by compaction
+- memory contents all free together in one large block
+- compaction is possbible only if relocation is dynamic, and is done at execution time
+
+I/O problem
+	-latch job in memory whil involved in I/O
+
+**Segmentation**
+-memory-management scheme that supports user view of memory
+-program is a collection of segments
+	-a segment is a logical unit such as:
+		main program
+		procedure
+		function
+		method
+		object
+		local variables, global ""
+		common block
+		stack
+
+**Segmentation Architecture**
+logical address consists of a two tuple:
+	<segment-number, offset>
+
+segment table- maps two-dimenstional physical addresses: each table entry has
+	-base: contains the starting physical address where the segments reside in memory
+	-limit: specifies the length of the segment
+
+-segment-table base register (STBR): points t the segment table's location in memory
+-segment-table length register (STLR): indicates number of segments used by a program;
+		segment number s is legal if s < STLR
+
+protection
+	-Witch each entry in segment table associate:
+		-validation bit = 0 -> illegal segment
+		-read/write/execute priveleges
+
+	-Protection bits associated with segments; code sharing occurs at segment level
+	-since segments vary in length, memory allocation is a dynamic storage-allocation problem
+
+segments are of variable size**
+pages typically fit**
+
+**Paging**
+Physical address space of a process can be noncontiguous; process is allocated physical memory whenever the latter is available.
+	-Avoids externa fragmentation
+	-Avoids problem of varying sized memory chunks
+-Divide physical memory into fixed-sized blocks called frames
+	-size is power of 2, between 512 bytes and 16 Mbytes
+-divide logical memory into blocks of same size called pages
+-keep track of all free frames
+-run a program of size N pages requres N free frames and load program
+-set up a page table to translate logical to physical addresses
+-backing store likewise split into pages
+-still have internal fragmentation
+
+**Address translation scheme**
+Address generated by CPU is divided into:
+Page number(p)- used as an index into a page table which contains base address f each page in physical memory
+Page offset(d)- combined with base address to define the physical memory address that is sent to the memory unit
+
+
+
